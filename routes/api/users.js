@@ -13,7 +13,7 @@ router.get("/test", (req, res) => {
   res.json({ msg: "Users works!!!" });
 });
 
-// @route   GET api/users/register
+// @route   POST api/users/register
 // @desc    Register a user
 // @access  public
 router.post("/register", (req, res) => {
@@ -48,6 +48,30 @@ router.post("/register", (req, res) => {
         });
       });
     }
+  });
+});
+
+// @route   POST api/users/login
+// @desc    Login user / Return the JWT
+// @access  public
+router.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  //Find the user by email
+  User.findOne({ email }).then((user) => {
+    if (!user) {
+      return res.status(404).json({ email: "User not found" });
+    }
+
+    //Check password
+    bcrypt.compare(password, user.password).then((isMatch) => {
+      if (isMatch) {
+        res.json({ msg: "Success" });
+      } else {
+        return res.status(400).json({ passowrd: "Incorrect password" });
+      }
+    });
   });
 });
 
